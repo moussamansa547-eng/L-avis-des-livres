@@ -41,6 +41,7 @@ import {
   Film,
 } from 'lucide-react';
 import { getAdvisorWhatsAppUrl } from './services/whatsappService';
+import { appendOrderToGoogleSheet } from './services/googleSheetsService';
 
 export default function App() {
   // Persistent State Initializations
@@ -235,6 +236,23 @@ export default function App() {
     setCart([]);
     setAppliedPromo(null);
     setCompletedOrder(order);
+
+    // Asynchronously append new order to connected Google Sheet if active
+    const activeSpreadsheetId = localStorage.getItem('lavis_sheets_id');
+    if (activeSpreadsheetId) {
+      appendOrderToGoogleSheet(activeSpreadsheetId, [
+        order.id,
+        order.customerName,
+        order.customerPhone,
+        new Date(order.createdAt).toLocaleDateString('fr-FR'),
+        order.items.map((i) => i.title).join(' | '),
+        order.items.reduce((s, i) => s + i.quantity, 0),
+        order.total,
+        order.paymentMethod.toUpperCase(),
+        order.deliveryZone.name,
+        'Nouvelle commande',
+      ]).catch(() => {});
+    }
   };
 
   // Book Admin Handlers

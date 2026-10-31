@@ -30,6 +30,7 @@ import {
   downloadSheetAsCsv,
   ExcelSheetData,
 } from '../services/excelService';
+import { GoogleSheetsSync } from './GoogleSheetsSync';
 
 interface AdminDashboardProps {
   books: Book[];
@@ -263,7 +264,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             }`}
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-            <span>Synchronisation Excel</span>
+            <span>Excel & Google Sheets</span>
           </button>
 
           <button
@@ -761,19 +762,33 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
         )}
 
-        {/* ==================== 5. SYNCHRONISATION EXCEL ==================== */}
+        {/* ==================== 5. SYNCHRONISATION EXCEL & GOOGLE SHEETS ==================== */}
         {currentTab === 'excel' && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h3 className="font-serif text-xl font-bold text-[#1A1715] flex items-center gap-2">
-                  <FileSpreadsheet className="w-6 h-6 text-emerald-600" />
-                  <span>Base de Données & Moteur Excel à 5 Feuilles</span>
-                </h3>
-                <p className="text-xs text-[#78716C]">
-                  Visualisation interactive, téléchargement immédiat et synchronisation Microsoft Graph API
-                </p>
-              </div>
+          <div className="space-y-8">
+            {/* Live Google Sheets & Drive API Integration */}
+            <GoogleSheetsSync
+              database={excelDatabase}
+              onSyncCompleted={(res) => {
+                const now = new Date().toLocaleTimeString('fr-FR');
+                setSyncLogs((prev) => [
+                  `[${now}] Google Sheets synchronisé : ${res.sheetsUpdated.length} onglets (${res.spreadsheetId})`,
+                  ...prev,
+                ]);
+              }}
+            />
+
+            {/* Local Excel & CSV Database Viewer */}
+            <div className="border-t border-[#E8E2D9] pt-6 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-serif text-xl font-bold text-[#1A1715] flex items-center gap-2">
+                    <FileSpreadsheet className="w-6 h-6 text-emerald-600" />
+                    <span>Visualisation Locale des Données Excel & Téléchargement</span>
+                  </h3>
+                  <p className="text-xs text-[#78716C]">
+                    Consultez vos 5 feuilles en temps réel et exportez en format Microsoft Excel (.xls) ou .CSV UTF-8
+                  </p>
+                </div>
 
               {/* Excel Download Actions */}
               <div className="flex items-center gap-2">
@@ -887,6 +902,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   {log}
                 </div>
               ))}
+            </div>
             </div>
           </div>
         )}
