@@ -1,0 +1,6 @@
+{
+  "name": "L'AVIS DES LIVRES",
+  "description": "Boutique e-commerce intelligente, agent IA conversationnel et studio d'animation vidéo connectés à WhatsApp Business & Excel au Cameroun.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
